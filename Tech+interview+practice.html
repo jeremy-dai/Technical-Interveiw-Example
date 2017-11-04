@@ -11788,42 +11788,81 @@ div#notebook {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="Question-1">Question 1<a class="anchor-link" href="#Question-1">&#182;</a></h1><p>Given two strings s and t, determine whether some anagram of t is a substring of s. For example: if s = "udacity" and t = "ad", then the function returns True. Your function definition should look like: question1(s, t) and return a boolean True or False.</p>
-<h2 id="Solution">Solution<a class="anchor-link" href="#Solution">&#182;</a></h2><p>It is easy test if a string is a substring of another. The question here is how to create all the anagrams for a string. Imagine we have a list of all the anagrams for a certain string t. Every time, we want to create a list of all the anagrams for t plus one addiontal character. The way doing this is add that character to any location of every anagram of t.</p>
-<p>So in the begining t only contains one character. We will add characters until it contains all the characters we need. A for loop plus an recursive function will be used here.</p>
+<h2 id="Solution">Solution<a class="anchor-link" href="#Solution">&#182;</a></h2><p>To check if some anagram of t is a substring of s, we can check whether s has all the characters within s.</p>
+<p>We can first compile a dictionary of counts for t and check with every possible consecutive substring sets in s. If any set is anagram of t, then we return True, else False.</p>
+<p>Comparing counts of all characters will can be done in constant time since there are only limited amount of characters to check. Looping through all possible consecutive substrings will take worst case O(len(s)). Therefore, the time complexity of this algorithm is O(len(s)). The space complexity is O(1) although we are creating a dictionary because we can have atmost 26 characters and thus it is bounded.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[336]:</div>
+<div class="prompt input_prompt">In&nbsp;[51]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="k">def</span> <span class="nf">question1</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">s</span><span class="p">):</span>
-    <span class="n">chars</span><span class="o">=</span><span class="nb">sorted</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-    <span class="c1">#Use helper1 fuction to get a list of all the anagrams</span>
-    <span class="n">t_list</span><span class="o">=</span><span class="n">helper1</span><span class="p">(</span><span class="n">chars</span><span class="p">)</span>
-    <span class="k">print</span> <span class="s1">&#39;The anagram list is:&#39;</span><span class="p">,</span><span class="n">t_list</span>
-    <span class="k">print</span> <span class="s1">&#39;The target string is:&#39;</span><span class="p">,</span><span class="n">s</span>
-    <span class="k">print</span> <span class="s1">&#39;One of the anagram is a substring of target string?&#39;</span>
-    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">t_list</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">True</span>
+<div class=" highlight hl-ipython2"><pre><span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="k">def</span> <span class="nf">question1</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">s</span><span class="p">):</span>
+    <span class="n">t_list</span> <span class="o">=</span> <span class="n">helper1</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">n</span><span class="p">):</span>
+            <span class="n">substring</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">s_list</span> <span class="o">=</span> <span class="n">helper1</span><span class="p">(</span><span class="n">substring</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">t_list</span><span class="o">==</span><span class="n">s_list</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">True</span>
+
     <span class="k">return</span> <span class="bp">False</span>
     
 <span class="k">def</span> <span class="nf">helper1</span><span class="p">(</span><span class="n">chars</span><span class="p">):</span>
-    <span class="c1">#create a list of all the anagrams</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">chars</span><span class="p">)</span><span class="o">&lt;=</span><span class="mi">1</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">chars</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">anagrams</span><span class="o">=</span><span class="p">[]</span>
-        <span class="k">for</span> <span class="n">anagram</span> <span class="ow">in</span> <span class="n">helper1</span><span class="p">(</span><span class="n">chars</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span> <span class="c1"># get all the possible anagrams with last i-1 character(s)</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">chars</span><span class="p">)):</span> <span class="c1"># there are i combination(s) for each anagram</span>
-                <span class="n">new_anagram</span><span class="o">=</span><span class="n">anagram</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="n">chars</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">anagram</span><span class="p">[</span><span class="n">i</span><span class="p">:]</span>
-                <span class="n">anagrams</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_anagram</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">anagrams</span>
-    
-<span class="k">print</span> <span class="n">question1</span><span class="p">(</span><span class="s1">&#39;oelv&#39;</span><span class="p">,</span><span class="s1">&#39;i love you&#39;</span><span class="p">)</span>
+    <span class="n">clist</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">chars</span><span class="p">:</span>
+        <span class="n">clist</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">+=</span><span class="mi">1</span>
+    <span class="k">return</span> <span class="n">clist</span>
+        
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">#previous answer</span>
+<span class="sd">It is easy test if a string is a substring of another. </span>
+<span class="sd">The question here is how to create all the anagrams for a string. </span>
+<span class="sd">Imagine we have a list of all the anagrams for a certain string t. </span>
+<span class="sd">Every time, we want to create a list of all the anagrams for t plus one addiontal character. </span>
+<span class="sd">The way doing this is add that character to any location of every anagram of t.</span>
+
+<span class="sd">So in the begining t only contains one character. </span>
+<span class="sd">We will add characters until it contains all the characters we need. </span>
+<span class="sd">A for loop plus an recursive function will be used here.</span>
+
+<span class="sd">def question1(t,s):</span>
+<span class="sd">    chars=sorted(t)</span>
+<span class="sd">    #Use helper1 fuction to get a list of all the anagrams</span>
+<span class="sd">    t_list=helper1(chars)</span>
+<span class="sd">    print &#39;The anagram list is:&#39;,t_list</span>
+<span class="sd">    print &#39;The target string is:&#39;,s</span>
+<span class="sd">    print &#39;One of the anagram is a substring of target string?&#39;</span>
+<span class="sd">    for t in t_list:</span>
+<span class="sd">        if t in s:</span>
+<span class="sd">            return True</span>
+<span class="sd">    return False</span>
+<span class="sd">    </span>
+<span class="sd">def helper1(chars):</span>
+<span class="sd">    #create a list of all the anagrams</span>
+<span class="sd">    if len(chars)&lt;=1:</span>
+<span class="sd">        return chars</span>
+<span class="sd">    else:</span>
+<span class="sd">        anagrams=[]</span>
+<span class="sd">        for anagram in helper1(chars[1:]): # get all the possible anagrams with last i-1 character(s)</span>
+<span class="sd">            for i in range(len(chars)): # there are i combination(s) for each anagram</span>
+<span class="sd">                new_anagram=anagram[0:i]+chars[0]+anagram[i:]</span>
+<span class="sd">                anagrams.append(new_anagram)</span>
+<span class="sd">        return anagrams</span>
+<span class="sd">        </span>
+<span class="sd"># For a string of n characters, inserting another character in any location requires n+1 times calculation.</span>
+<span class="sd">So the runtime is O(n!)</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="k">print</span> <span class="n">question1</span><span class="p">(</span><span class="s1">&#39;ol&#39;</span><span class="p">,</span><span class="s1">&#39;love&#39;</span><span class="p">)</span> 
+<span class="k">print</span> <span class="n">question1</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s1">&#39;love&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">question1</span><span class="p">(</span><span class="s1">&#39;love&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">question1</span><span class="p">(</span><span class="s1">&#39;ss&#39;</span><span class="p">,</span><span class="s1">&#39;sometimes&#39;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -11838,10 +11877,10 @@ div#notebook {
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>The anagram list is: [&#39;elov&#39;, &#39;leov&#39;, &#39;loev&#39;, &#39;love&#39;, &#39;eolv&#39;, &#39;oelv&#39;, &#39;olev&#39;, &#39;olve&#39;, &#39;eovl&#39;, &#39;oevl&#39;, &#39;ovel&#39;, &#39;ovle&#39;, &#39;elvo&#39;, &#39;levo&#39;, &#39;lveo&#39;, &#39;lvoe&#39;, &#39;evlo&#39;, &#39;velo&#39;, &#39;vleo&#39;, &#39;vloe&#39;, &#39;evol&#39;, &#39;veol&#39;, &#39;voel&#39;, &#39;vole&#39;]
-The target string is: i love you
-One of the anagram is a substring of target string?
-True
+<pre>True
+False
+False
+False
 </pre>
 </div>
 </div>
@@ -11855,8 +11894,11 @@ True
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>For a string of n characters, inserting another character in any location requires n+1 times calculation.</p>
-<p>So the runtime is O(n!)</p>
+<h3 id="Complexity">Complexity<a class="anchor-link" href="#Complexity">&#182;</a></h3><p>The worst case if tryiing all the substring of s, which takes len(s)^2 times of calculation. Looping through t takes len(t) times of calculation.</p>
+<ul>
+<li>Time: O(len(s)^2+len(t))</li>
+<li>Space: O(len(s)+len(t))</li>
+</ul>
 <h1 id="Question-2">Question 2<a class="anchor-link" href="#Question-2">&#182;</a></h1><p>Given a string a, find the longest palindromic substring contained in a. Your function definition should look like question2(a), and return a string.</p>
 <h2 id="Solution">Solution<a class="anchor-link" href="#Solution">&#182;</a></h2><p>First, everay single character is a palindrom of length 1.</p>
 <p>The simple solution is to list all the palindroms in the list and return the longest ones.</p>
@@ -11874,62 +11916,67 @@ True
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[347]:</div>
+<div class="prompt input_prompt">In&nbsp;[52]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 
 <span class="k">def</span> <span class="nf">question2</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
-    <span class="n">maxlength</span><span class="o">=</span><span class="mi">1</span>
-    <span class="n">palindrome</span><span class="o">=</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
-    <span class="n">palindrome</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1">#st</span>
-    <span class="c1"># Find the longest odd length palindrome with center </span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-        <span class="n">maxj</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="p">)</span> <span class="c1"># stop when we reach the leftmost or rightmost character</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">maxj</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">a</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s1">&#39;Please give a value&#39;</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">maxlength</span><span class="o">=</span><span class="mi">1</span>
+        <span class="n">palindrome</span><span class="o">=</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="n">palindrome</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1">#st</span>
+        <span class="c1"># Find the longest odd length palindrome with center </span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">maxj</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="p">)</span> <span class="c1"># stop when we reach the leftmost or rightmost character</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">maxj</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">j</span><span class="p">]</span><span class="o">!=</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">j</span><span class="p">]:</span>
+                    <span class="k">break</span>
             <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">j</span><span class="p">]</span><span class="o">!=</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">j</span><span class="p">]:</span>
-                <span class="k">break</span>
-        <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">j</span><span class="p">]</span><span class="o">!=</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">j</span><span class="p">]:</span>
-            <span class="n">length</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span>
-            <span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="o">-</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">length</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span>
-            <span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="o">-</span><span class="n">j</span>
-        <span class="n">palindrome</span><span class="p">[</span><span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="c1">#append the index based on its length</span>
-        <span class="k">if</span> <span class="n">length</span> <span class="o">&gt;</span> <span class="n">maxlength</span><span class="p">:</span>
-            <span class="n">maxlength</span><span class="o">=</span><span class="n">length</span> <span class="c1"># update the maxlength is the current one is longer</span>
-            
-    <span class="c1"># Find the longest even length palindrome with center </span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">==</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]:</span> <span class="c1"># find two adjacent identical characters in the word</span>
-            <span class="c1"># if the characters are the leftmost or rightmost ones</span>
-            <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">i</span><span class="o">==</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">maxlength</span><span class="o">&lt;</span><span class="mi">2</span><span class="p">:</span>
-                    <span class="n">maxlength</span><span class="o">=</span><span class="mi">2</span> <span class="c1"># update the maxlength is the current one is longer</span>
-                <span class="n">palindrome</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="n">length</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span>
+                <span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="o">-</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">maxj</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="o">-</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="p">)</span> <span class="c1"># stop when we reach the leftmost or rightmost character</span>
-                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">maxj</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">j</span><span class="p">]</span><span class="o">!=</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="o">+</span><span class="n">j</span><span class="p">]:</span>
-                        <span class="k">break</span>
-                <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">j</span><span class="p">]</span><span class="o">!=</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="o">+</span><span class="n">j</span><span class="p">]:</span>
-                    <span class="n">length</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">j</span>
-                    <span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="o">-</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span>
+                <span class="n">length</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span>
+                <span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="o">-</span><span class="n">j</span>
+            <span class="n">palindrome</span><span class="p">[</span><span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="c1">#append the index based on its length</span>
+            <span class="k">if</span> <span class="n">length</span> <span class="o">&gt;</span> <span class="n">maxlength</span><span class="p">:</span>
+                <span class="n">maxlength</span><span class="o">=</span><span class="n">length</span> <span class="c1"># update the maxlength is the current one is longer</span>
+
+        <span class="c1"># Find the longest even length palindrome with center </span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">==</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]:</span> <span class="c1"># find two adjacent identical characters in the word</span>
+                <span class="c1"># if the characters are the leftmost or rightmost ones</span>
+                <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">i</span><span class="o">==</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">maxlength</span><span class="o">&lt;</span><span class="mi">2</span><span class="p">:</span>
+                        <span class="n">maxlength</span><span class="o">=</span><span class="mi">2</span> <span class="c1"># update the maxlength is the current one is longer</span>
+                    <span class="n">palindrome</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">length</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">j</span><span class="o">+</span><span class="mi">2</span>
-                    <span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="o">-</span><span class="n">j</span>                  
-                <span class="n">palindrome</span><span class="p">[</span><span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="c1">#append the index based on its length</span>
-                <span class="k">if</span> <span class="n">length</span> <span class="o">&gt;</span> <span class="n">maxlength</span><span class="p">:</span>
-                    <span class="n">maxlength</span><span class="o">=</span><span class="n">length</span> <span class="c1"># update the maxlength is the current one is longer</span>
-                        
-    <span class="k">print</span> <span class="s1">&#39;The length of longest palindromic substring of &#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span><span class="n">maxlength</span>
-    <span class="k">print</span> <span class="s1">&#39;They are/It is:&#39;</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">palindrome</span><span class="p">[</span><span class="n">maxlength</span><span class="p">]:</span>
-        <span class="k">print</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">maxlength</span><span class="p">]</span>
+                    <span class="n">maxj</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="o">-</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="p">)</span> <span class="c1"># stop when we reach the leftmost or rightmost character</span>
+                    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">maxj</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">j</span><span class="p">]</span><span class="o">!=</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="o">+</span><span class="n">j</span><span class="p">]:</span>
+                            <span class="k">break</span>
+                    <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">j</span><span class="p">]</span><span class="o">!=</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="o">+</span><span class="n">j</span><span class="p">]:</span>
+                        <span class="n">length</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">j</span>
+                        <span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="o">-</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">length</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">j</span><span class="o">+</span><span class="mi">2</span>
+                        <span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="o">-</span><span class="n">j</span>                  
+                    <span class="n">palindrome</span><span class="p">[</span><span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="c1">#append the index based on its length</span>
+                    <span class="k">if</span> <span class="n">length</span> <span class="o">&gt;</span> <span class="n">maxlength</span><span class="p">:</span>
+                        <span class="n">maxlength</span><span class="o">=</span><span class="n">length</span> <span class="c1"># update the maxlength is the current one is longer</span>
+
+        <span class="k">print</span> <span class="s1">&#39;The length of longest palindromic substring of &#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span><span class="n">maxlength</span>
+        <span class="k">print</span> <span class="s1">&#39;They are/It is:&#39;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">palindrome</span><span class="p">[</span><span class="n">maxlength</span><span class="p">]:</span>
+            <span class="k">print</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">maxlength</span><span class="p">]</span>
             
 <span class="n">question2</span><span class="p">(</span><span class="s1">&#39;cbcdaaa&#39;</span><span class="p">)</span>
 <span class="n">question2</span><span class="p">(</span><span class="s1">&#39;abcbaaa&#39;</span><span class="p">)</span>
-<span class="n">question2</span><span class="p">(</span><span class="s1">&#39;abcdef&#39;</span><span class="p">)</span>
+<span class="n">question2</span><span class="p">(</span><span class="s1">&#39;abc&#39;</span><span class="p">)</span>
+<span class="n">question2</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -11951,14 +11998,12 @@ aaa
 The length of longest palindromic substring of  abcbaaa is 5
 They are/It is:
 abcba
-The length of longest palindromic substring of  abcdef is 1
+The length of longest palindromic substring of  abc is 1
 They are/It is:
 a
-f
-b
 c
-d
-e
+b
+Please give a value
 </pre>
 </div>
 </div>
@@ -11972,7 +12017,11 @@ e
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>For a string of length n, serach every character takes n times of calculation. For each character, we need an average of n/2 times of calculation. In total, the runtime is O(n^2)</p>
+<h3 id="Complexity">Complexity<a class="anchor-link" href="#Complexity">&#182;</a></h3><p>For a string of length n, serach every character takes n times of calculation. For each character, we need an average of n/2 times of calculation. In total, the runtime is O(n^2)</p>
+<ul>
+<li>Time: O(n^2)</li>
+<li>Space: O(n)</li>
+</ul>
 <h1 id="Question-3">Question 3<a class="anchor-link" href="#Question-3">&#182;</a></h1><p>Given an undirected graph G, find the minimum spanning tree within G. A minimum spanning tree connects all vertices in a graph with the smallest possible total weight of edges. Your function should take in and return an adjacency list structured like this:</p>
 <p>{'A': [('B', 2)],
  'B': [('A', 2), ('C', 5)], 
@@ -11987,7 +12036,7 @@ Vertices are represented as unique strings. The function definition should be qu
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[262]:</div>
+<div class="prompt input_prompt">In&nbsp;[53]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
@@ -12000,7 +12049,7 @@ Vertices are represented as unique strings. The function definition should be qu
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[348]:</div>
+<div class="prompt input_prompt">In&nbsp;[54]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="n">G</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;A&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)],</span>
@@ -12055,6 +12104,17 @@ Vertices are represented as unique strings. The function definition should be qu
 
 
 <span class="k">print</span> <span class="n">question3</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+<span class="n">G</span><span class="o">=</span><span class="p">{}</span>
+
+
+<span class="k">print</span> <span class="n">question3</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+<span class="n">G</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;A&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)],</span>
+   <span class="s1">&#39;B&#39;</span><span class="p">:[(</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]}</span>
+
+
+<span class="k">print</span> <span class="n">question3</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12071,6 +12131,10 @@ Vertices are represented as unique strings. The function definition should be qu
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>The start node is: A
 defaultdict(&lt;type &#39;list&#39;&gt;, {&#39;A&#39;: [(&#39;C&#39;, 1), (&#39;B&#39;, 2)], &#39;C&#39;: [(&#39;A&#39;, 1)], &#39;B&#39;: [(&#39;A&#39;, 2)]})
+The start node is: None
+defaultdict(&lt;type &#39;list&#39;&gt;, {})
+The start node is: A
+defaultdict(&lt;type &#39;list&#39;&gt;, {&#39;A&#39;: [(&#39;B&#39;, 2)], &#39;B&#39;: [(&#39;A&#39;, 2)]})
 </pre>
 </div>
 </div>
@@ -12084,35 +12148,44 @@ defaultdict(&lt;type &#39;list&#39;&gt;, {&#39;A&#39;: [(&#39;C&#39;, 1), (&#39;
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>When we use Prim's algorithm, we search every node and its adjacent node. If we have V vertex, the worst case run time is O(V^2).</p>
+<h3 id="Complexity">Complexity<a class="anchor-link" href="#Complexity">&#182;</a></h3><p>When we use Prim's algorithm, we search every node and its adjacent node. If we have V vertex:</p>
+<ul>
+<li>Time:O(V^2)</li>
+<li>Space:O(V)</li>
+</ul>
 <h1 id="Question-4">Question 4<a class="anchor-link" href="#Question-4">&#182;</a></h1><p>Find the least common ancestor between two nodes on a binary search tree. The least common ancestor is the farthest node from the root that is an ancestor of both nodes. For example, the root is a common ancestor of all nodes on the tree, but if both nodes are descendents of the root's left child, then that left child might be the lowest common ancestor. You can assume that both nodes are in the tree, and the tree itself adheres to all BST properties. The function definition should look like question4(T, r, n1, n2), where T is the tree represented as a matrix, where the index of the list is equal to the integer stored in that node and a 1 represents a child node, r is a non-negative integer representing the root, and n1 and n2 are non-negative integers representing the two nodes in no particular order.</p>
-<h2 id="Solution">Solution<a class="anchor-link" href="#Solution">&#182;</a></h2>
+<h2 id="Solution">Solution<a class="anchor-link" href="#Solution">&#182;</a></h2><p>First we create lists to store all the ancestors for each of the the node. Then we find the first matching node from the list.</p>
+
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[351]:</div>
+<div class="prompt input_prompt">In&nbsp;[55]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="k">def</span> <span class="nf">question4</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">):</span>
     <span class="n">length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">ancestor1</span><span class="o">=</span><span class="p">[]</span>
-    <span class="n">ancestor2</span><span class="o">=</span><span class="p">[]</span>
-    <span class="c1"># find the ancestor lists of the two leaves</span>
-    <span class="n">ancestor1</span><span class="o">=</span><span class="n">helper4</span><span class="p">(</span><span class="n">T</span><span class="p">,</span><span class="n">r</span><span class="p">,</span><span class="n">n1</span><span class="p">,</span><span class="n">length</span><span class="p">,</span><span class="n">ancestor1</span><span class="p">)</span>
-    <span class="n">ancestor2</span><span class="o">=</span><span class="n">helper4</span><span class="p">(</span><span class="n">T</span><span class="p">,</span><span class="n">r</span><span class="p">,</span><span class="n">n2</span><span class="p">,</span><span class="n">length</span><span class="p">,</span><span class="n">ancestor2</span><span class="p">)</span>
-    <span class="c1"># find the least common ancestor</span>
-    <span class="n">minlength</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ancestor1</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">ancestor2</span><span class="p">))</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">minlength</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">ancestor1</span><span class="p">[</span><span class="o">-</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">!=</span><span class="n">ancestor2</span><span class="p">[</span><span class="o">-</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
-            <span class="k">return</span> <span class="n">ancestor1</span><span class="p">[</span><span class="o">-</span><span class="n">i</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">ancestor1</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">length</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ancestor1</span><span class="o">=</span><span class="p">[]</span>
+        <span class="n">ancestor2</span><span class="o">=</span><span class="p">[]</span>
+        <span class="c1"># find the ancestor lists of the two leaves</span>
+        <span class="n">ancestor1</span><span class="o">=</span><span class="n">helper4</span><span class="p">(</span><span class="n">T</span><span class="p">,</span><span class="n">r</span><span class="p">,</span><span class="n">n1</span><span class="p">,</span><span class="n">length</span><span class="p">,</span><span class="n">ancestor1</span><span class="p">)</span>
+        <span class="c1">#print ancestor1</span>
+        <span class="n">ancestor2</span><span class="o">=</span><span class="n">helper4</span><span class="p">(</span><span class="n">T</span><span class="p">,</span><span class="n">r</span><span class="p">,</span><span class="n">n2</span><span class="p">,</span><span class="n">length</span><span class="p">,</span><span class="n">ancestor2</span><span class="p">)</span>
+        <span class="c1">#print ancestor2</span>
+        <span class="c1"># find the least common ancestor</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ancestor1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ancestor2</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">i</span>
+        <span class="k">return</span> <span class="n">ancestor1</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
 <span class="k">def</span> <span class="nf">helper4</span><span class="p">(</span><span class="n">T</span><span class="p">,</span><span class="n">r</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">length</span><span class="p">,</span><span class="n">ancestor</span><span class="p">):</span>
     <span class="c1"># this function is used to store the all the ancestors of a certain leaf</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">length</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">n</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">T</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">n</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
             <span class="n">ancestor</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">r</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">ancestor</span>
@@ -12126,6 +12199,17 @@ defaultdict(&lt;type &#39;list&#39;&gt;, {&#39;A&#39;: [(&#39;C&#39;, 1), (&#39;
    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
 <span class="k">print</span> <span class="n">question4</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">question4</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">B</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+   <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+   <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+   <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+   <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+<span class="k">print</span> <span class="n">question4</span><span class="p">(</span><span class="n">B</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="n">C</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">]]</span>
+<span class="k">print</span> <span class="n">question4</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12140,7 +12224,10 @@ defaultdict(&lt;type &#39;list&#39;&gt;, {&#39;A&#39;: [(&#39;C&#39;, 1), (&#39;
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>3
+<pre>1
+3
+3
+0
 </pre>
 </div>
 </div>
@@ -12154,8 +12241,11 @@ defaultdict(&lt;type &#39;list&#39;&gt;, {&#39;A&#39;: [(&#39;C&#39;, 1), (&#39;
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>First we go through the height of the tree for two leaves. The worst case takes n times of calculation (unbalanced) and the average case takes log(n) times.</p>
-<p>Then we compare the ancestor lists. So the worst case run time is O(n^2) and average case run time is O(log(n)^2)</p>
+<h3 id="Complexity">Complexity<a class="anchor-link" href="#Complexity">&#182;</a></h3><p>First we go through the height of the tree for two leaves. The worst case takes n times of calculation (unbalanced) and the average case takes log(n) times. Then we compare the ancestor lists.</p>
+<ul>
+<li>Time: worst case is O(n^2) and average case is O(log(n)^2)</li>
+<li>Spce: worst case is O(n) and average case is O(log(n))</li>
+</ul>
 <h1 id="Question-5">Question 5<a class="anchor-link" href="#Question-5">&#182;</a></h1><p>Find the element in a singly linked list that's m elements from the end. For example, if a linked list has 5 elements, the 3rd element from the end is the 3rd element. The function definition should look like question5(ll, m), where ll is the first node of a linked list and m is the "mth number from the end". You should copy/paste the Node class below to use as a representation of a node in the linked list. Return the value of the node at that position.</p>
 <p>class Node(object):
   def <strong>init</strong>(self, data):
@@ -12169,7 +12259,7 @@ NEXT</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[356]:</div>
+<div class="prompt input_prompt">In&nbsp;[56]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># define the node class</span>
@@ -12191,16 +12281,16 @@ NEXT</p>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">head</span> <span class="o">=</span> <span class="n">new_node</span>
 
-<span class="k">def</span> <span class="nf">question5</span><span class="p">(</span><span class="n">ll</span><span class="p">,</span><span class="n">m</span><span class="p">):</span>
-    <span class="n">length</span><span class="p">,</span> <span class="n">node_list</span> <span class="o">=</span> <span class="n">helper5</span><span class="p">(</span><span class="n">ll</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">question5</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">m</span><span class="p">):</span>
+    <span class="n">length</span><span class="p">,</span> <span class="n">node_list</span> <span class="o">=</span> <span class="n">helper5</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
     <span class="k">print</span> <span class="n">node_list</span>
     <span class="k">print</span> <span class="n">length</span>
     <span class="k">print</span> <span class="n">node_list</span><span class="p">[</span><span class="n">length</span><span class="o">-</span><span class="n">m</span><span class="p">]</span> <span class="c1"># start from the right end of the list</span>
     
-<span class="k">def</span> <span class="nf">helper5</span><span class="p">(</span><span class="n">ll</span><span class="p">):</span> 
+<span class="k">def</span> <span class="nf">helper5</span><span class="p">(</span><span class="n">l</span><span class="p">):</span> 
     <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1">#get number of nodes</span>
     <span class="n">node_list</span><span class="o">=</span><span class="p">[]</span> <span class="c1">#get all the nodes in the LinkedList</span>
-    <span class="n">current</span> <span class="o">=</span> <span class="n">ll</span><span class="o">.</span><span class="n">head</span>
+    <span class="n">current</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">head</span>
     <span class="k">while</span> <span class="n">current</span><span class="p">:</span>
         <span class="n">node_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
         <span class="n">current</span> <span class="o">=</span> <span class="n">current</span><span class="o">.</span><span class="n">next</span>
@@ -12212,18 +12302,20 @@ NEXT</p>
 <span class="n">e1</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s1">&#39;I&#39;</span><span class="p">)</span>
 <span class="n">e2</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s1">&#39;Love&#39;</span><span class="p">)</span>
 <span class="n">e3</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s1">&#39;Taylor Swift</span><span class="se">\&#39;</span><span class="s1">s&#39;</span><span class="p">)</span>
-<span class="n">e4</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s1">&#39;Blank&#39;</span><span class="p">)</span>
-<span class="n">e5</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s1">&#39;Space&#39;</span><span class="p">)</span>
+<span class="n">e4</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s1">&#39;Goregeous&#39;</span><span class="p">)</span>
+<span class="n">e5</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s1">&#39;I</span><span class="se">\&#39;</span><span class="s1">m alone&#39;</span><span class="p">)</span>
 
 <span class="c1"># Start setting up a LinkedList</span>
 <span class="n">ll</span> <span class="o">=</span> <span class="n">LinkedList</span><span class="p">(</span><span class="n">e1</span><span class="p">)</span>
 <span class="n">ll</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e2</span><span class="p">)</span>
 <span class="n">ll</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e3</span><span class="p">)</span>
 <span class="n">ll</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e4</span><span class="p">)</span>
-<span class="n">ll</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e5</span><span class="p">)</span>
+<span class="n">one</span> <span class="o">=</span> <span class="n">LinkedList</span><span class="p">(</span><span class="n">e5</span><span class="p">)</span>
 
 <span class="c1"># Test Question5</span>
+<span class="n">question5</span><span class="p">(</span><span class="n">ll</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">question5</span><span class="p">(</span><span class="n">ll</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">question5</span><span class="p">(</span><span class="n">one</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12238,9 +12330,15 @@ NEXT</p>
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>[&#39;I&#39;, &#39;Love&#39;, &#34;Taylor Swift&#39;s&#34;, &#39;Blank&#39;, &#39;Space&#39;]
-5
-Taylor Swift&#39;s
+<pre>[&#39;I&#39;, &#39;Love&#39;, &#34;Taylor Swift&#39;s&#34;, &#39;Goregeous&#39;]
+4
+Goregeous
+[&#39;I&#39;, &#39;Love&#39;, &#34;Taylor Swift&#39;s&#34;, &#39;Goregeous&#39;]
+4
+Love
+[&#34;I&#39;m alone&#34;]
+1
+I&#39;m alone
 </pre>
 </div>
 </div>
@@ -12254,7 +12352,11 @@ Taylor Swift&#39;s
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>All it needs is seraching through the list. So the runtime is O(n) for n nodes.</p>
+<h3 id="Complexity">Complexity<a class="anchor-link" href="#Complexity">&#182;</a></h3><p>All it needs is seraching through the list. With n nodes:</p>
+<ul>
+<li>Time: O(n) </li>
+<li>Space: O(n)</li>
+</ul>
 
 </div>
 </div>
